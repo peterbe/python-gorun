@@ -107,6 +107,8 @@ def configure_more(directories):
             if path.endswith('/'):
                 # tidy things up
                 path = path[:-1]
+            if path == '.':
+                path = ''
             actual_directories.add(path)
         else:
             # because we can't tell pyinotify to monitor files,
