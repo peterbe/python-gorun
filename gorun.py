@@ -15,11 +15,6 @@ LOCK_FILE = os.path.join(gettempdir(), 'gorunning.lock')
 
 from pyinotify import WatchManager, Notifier, ThreadedNotifier, ProcessEvent, EventsCodes
 
-wm = WatchManager()
-flags = EventsCodes.ALL_FLAGS
-#print flags.keys()
-#mask = FLAGS['IN_DELETE'] | FLAGS['IN_CREATE']  # watched events
-mask = flags['IN_MODIFY'] #| flags['IN_CREATE']
 
 def _find_command(path):
     # path is a file
@@ -75,7 +70,12 @@ class PTmp(ProcessEvent):
                 os.remove(LOCK_FILE)
             print "Waiting for stuff to happen again..."
             
-def start(actual_directories): 
+def start(actual_directories):
+    
+    wm = WatchManager()
+    flags = EventsCodes.ALL_FLAGS
+    mask = flags['IN_MODIFY'] #| flags['IN_CREATE']
+        
     p = PTmp()
     notifier = Notifier(wm, p)
     
@@ -116,7 +116,7 @@ def configure_more(directories):
         lookup[path] = cmd
         
     return actual_directories
-        
+
 
 if __name__=='__main__':
     import sys
