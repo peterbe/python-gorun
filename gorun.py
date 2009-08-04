@@ -103,6 +103,7 @@ def configure_more(directories):
             path = os.path.join(os.path.abspath(os.path.dirname('.')), path)
         if not (os.path.isfile(path) or os.path.isdir(path)):
             raise OSError, "%s neither a file or a directory" % path
+        path = os.path.normpath(path)
         if os.path.isdir(path):
             if path.endswith('/'):
                 # tidy things up
@@ -114,7 +115,7 @@ def configure_more(directories):
             # because we can't tell pyinotify to monitor files,
             # when a file is configured, add it's directory
             actual_directories.add(os.path.dirname(path)) 
-            
+        
         lookup[path] = cmd
         
     return actual_directories
