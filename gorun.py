@@ -8,12 +8,17 @@
 
 import os
 
+__version__='1.1'
     
 # Prepare a lock file
 from tempfile import gettempdir
 LOCK_FILE = os.path.join(gettempdir(), 'gorunning.lock')
 
-from pyinotify import WatchManager, Notifier, ThreadedNotifier, ProcessEvent, EventsCodes
+try:
+    from pyinotify import WatchManager, Notifier, ThreadedNotifier, ProcessEvent, EventsCodes
+except ImportError:
+    print "pyinotify not installed. Try: easy_install pyinotify"
+    raise
 
 
 def _find_command(path):
@@ -124,10 +129,17 @@ def configure_more(directories):
 if __name__=='__main__':
     import sys
     args = sys.argv[1:]
+    if not args and os.path.isfile('gorun_settings.py'):
+        print >>sys.stderr, "Guessing you want to use gorun_settings.py"
+        args = ['gorun_settings.py']
+    if not args and os.path.isfile('gorunsettings.py'):
+        print >>sys.stderr, "Guessing you want to use gorunsettings.py"
+        args = ['gorunsettings.py']
     if not args:
         print >>sys.stderr, "USAGE: %s importable_py_settings_file" %\
           __file__
         sys.exit(1)
+
     
     settings = args[-1]
     if settings.endswith('.py'):
