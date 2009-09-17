@@ -8,7 +8,7 @@
 
 import os
 
-__version__='1.1'
+__version__='1.2'
     
 # Prepare a lock file
 from tempfile import gettempdir
@@ -101,9 +101,15 @@ lookup = {}
 
 def configure_more(directories):
     actual_directories = set()
+    
+    #print "directories", directories
 
     # Tune the configured directories a bit
     for i, (path, cmd) in enumerate(directories):
+        if isinstance(path, (list, tuple)):
+            actual_directories.update(configure_more(
+                            [(x, cmd) for x in path]))
+            continue
         if not path.startswith('/'):
             path = os.path.join(os.path.abspath(os.path.dirname('.')), path)
         if not (os.path.isfile(path) or os.path.isdir(path)):

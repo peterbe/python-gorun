@@ -8,7 +8,10 @@ DIRECTORIES = (
   
   ('some/place/unitests.py', 
    './myframework test --dir some/place --testclass Unittests'),
-   
+
+  (('/path', '/path/sub', '/extra/path/elsewhere'),
+   'ping www.fdny.com'),
+
   ('/var/log/torrentsdownload.log',
    'growl downloads --logfile /var/log/torrentsdownload.log'),
 )
