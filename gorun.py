@@ -8,11 +8,16 @@
 
 import os
 
-__version__='1.2'
+__version__='1.3'
     
 # Prepare a lock file
 from tempfile import gettempdir
 LOCK_FILE = os.path.join(gettempdir(), 'gorunning.lock')
+
+class SettingsClass(object):
+    VERBOSE = False
+    
+settings = SettingsClass()
 
 try:
     from pyinotify import WatchManager, Notifier, ThreadedNotifier, ProcessEvent, EventsCodes
@@ -69,6 +74,9 @@ class PTmp(ProcessEvent):
         print "Modifying:", event.pathname
         command = _find_command(event.pathname)
         if command:
+            if settings.VERBOSE:
+                print "Command: ",
+                print command
             open(LOCK_FILE, 'w').write("Running command\n\n%s\n" % command)
             os.system(command)
             if os.path.isfile(LOCK_FILE):
@@ -147,13 +155,14 @@ if __name__=='__main__':
         sys.exit(1)
 
     
-    settings = args[-1]
-    if settings.endswith('.py'):
-        settings = settings[:-3]
+    settings_file = args[-1]
+    if settings_file.endswith('.py'):
+        settings_file = settings_file[:-3]
         
     sys.path.append(os.path.abspath(os.curdir))
-    x = __import__(settings)
-    DIRECTORIES = x.DIRECTORIES
-    actual_directories = configure_more(DIRECTORIES)
+    x = __import__(settings_file)
+    settings.DIRECTORIES = x.DIRECTORIES
+    settings.VERBOSE = getattr(x, 'VERBOSE', settings.VERBOSE)
+    actual_directories = configure_more(settings.DIRECTORIES)
     
     sys.exit(start(actual_directories))
