@@ -50,7 +50,20 @@ like this:
 
         $ gorun.py gorun_settings
 
+Configuration
+-------------
 
+Once you've set gorun to monitor a directory it will kick off on any
+file that changes in that directory. By default things like autosave
+files from certain editors are automatically created (e.g. #foo.py# or
+foo.py~) and these are ignored. If there are other file extensions you
+want gorun to ignore add this to your settings file:
+
+        IGNORE_EXTENSIONS = ('log',)
+        
+This will add to the list of already ignored file extensions such as
+`.pyc`.
+        
 Disclaimer
 ----------
 
