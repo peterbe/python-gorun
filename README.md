@@ -62,7 +62,12 @@ want gorun to ignore add this to your settings file:
         IGNORE_EXTENSIONS = ('log',)
         
 This will add to the list of already ignored file extensions such as
-`.pyc`.
+`.pyc`. 
+
+Similarly, if there are certain directories that you don't want the
+inotify to notice, you can list them like this:
+
+        IGNORE_DIRECTORIES = ('xapian_index', '.autosavefiles')
         
 Disclaimer
 ----------

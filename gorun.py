@@ -8,7 +8,7 @@
 
 import os
 
-__version__='1.4'
+__version__='1.5'
     
 # Prepare a lock file
 from tempfile import gettempdir
@@ -50,9 +50,11 @@ def _ignore_file(path):
         return True
     if os.path.basename(path).startswith('.#'):
         return True
-    if os.path.splitext(path)[1][1:] in getattr(settings, 
-                                                'IGNORE_EXTENSIONS',
-                                                tuple()):
+    if os.path.splitext(path)[1][1:] in \
+      getattr(settings, 'IGNORE_EXTENSIONS', tuple()):
+        return True
+    if os.path.split(os.path.dirname(path))[-1] in \
+      getattr(settings, 'IGNORE_DIRECTORIES', tuple()):
         return True
 
 class PTmp(ProcessEvent):
@@ -167,7 +169,6 @@ if __name__=='__main__':
     x = __import__(settings_file)
     settings.DIRECTORIES = x.DIRECTORIES
     settings.VERBOSE = getattr(x, 'VERBOSE', settings.VERBOSE)
-    settings.IGNORE_EXTENSIONS = getattr(x, 'IGNORE_EXTENSIONS', tuple())
     actual_directories = configure_more(settings.DIRECTORIES)
     
     sys.exit(start(actual_directories))
