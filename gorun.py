@@ -48,9 +48,11 @@ def _ignore_file(path):
         return True
     if path.endswith('~'):
         return True
-    if os.path.basename(path).startswith('.#'):
+    basename = os.path.basename(path)
+    if basename.startswith('.#'):
         return True
-    if os.path.splitext(path)[1][1:] in settings.IGNORE_EXTENSIONS:
+    if '.' in os.path.basename(path) and \
+       basename.split('.')[-1] in settings.IGNORE_EXTENSIONS:
         return True
     if os.path.split(os.path.dirname(path))[-1] in settings.IGNORE_DIRECTORIES:
         return True
