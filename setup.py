@@ -11,7 +11,7 @@ setup(name = 'python-gorun',
         ).read(),
         author='Peter Bengtsson',
         author_email='peter@fry-it.com',
-        url = 'http://github.com/Peterbe/python-gorun',
+        url = 'http://github.com/peterbe/python-gorun',
         classifiers = [
              'Programming Language :: Python :: 2',
              'Intended Audience :: Developers',
