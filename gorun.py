@@ -97,7 +97,7 @@ def start(actual_directories):
     notifier = Notifier(wm, p)
     
     for actual_directory in actual_directories:
-        print "ACTUAL_DIRECTORY", actual_directory
+        print "DIRECTORY", actual_directory
         wdd = wm.add_watch(actual_directory, mask, rec=True)
     
     # notifier = Notifier(wm, p, timeout=10)
