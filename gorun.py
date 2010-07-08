@@ -56,6 +56,8 @@ def _ignore_file(path):
         return True
     if os.path.split(os.path.dirname(path))[-1] in settings.IGNORE_DIRECTORIES:
         return True
+    if not os.path.isfile(path):
+        return True
 
 class PTmp(ProcessEvent):
     def process_IN_CREATE(self, event):
