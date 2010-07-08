@@ -1,7 +1,7 @@
 gorun
 =====
 
-(c) Peter Bengtsson, Fry-IT, peter@fry-it.com, 2009
+(c) Peter Bengtsson, Fry-IT, peter@fry-it.com, 2009-2010
 License: Python
 
 

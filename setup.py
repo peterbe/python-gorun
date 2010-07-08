@@ -3,12 +3,13 @@
 import os
 from distutils.core import setup
 
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 setup(name = 'python-gorun',
-        version = '0.2',
+        version = '0.3',
         description = 'Wrapper on pyinotify for running commands (often tests)',
-        long_description = file(
-            os.path.join(os.path.dirname(__file__), 'README.md')
-        ).read(),
+        long_description = read('README.md'),
         author='Peter Bengtsson',
         author_email='peter@fry-it.com',
         url = 'http://github.com/peterbe/python-gorun',
