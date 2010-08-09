@@ -3,16 +3,18 @@
 # Wrapper on pyinotify for running commands
 # (c) 2009 Peter Bengtsson, peter@fry-it.com
 # 
-# TODO: the lock file mechanism doesn't work! threading?
-#
+# TODO: Ok, now it does not start a command while another is runnnig
+#       But! then what if you actually wanted to test a modification you
+#            saved while running another test
+#         Yes, we could stop the running command and replace it by the new test
+#           But! django tests will complain that a test db is already here
 
 import os
 
+from subprocess import Popen
+from threading import Lock, Thread
+
 __version__='1.5'
-    
-# Prepare a lock file
-from tempfile import gettempdir
-LOCK_FILE = os.path.join(gettempdir(), 'gorunning.lock')
 
 class SettingsClass(object):
     VERBOSE = False
@@ -60,6 +62,11 @@ def _ignore_file(path):
         return True
 
 class PTmp(ProcessEvent):
+
+    def __init__(self):
+        super(PTmp, self).__init__()
+        self.lock = Lock()
+
     def process_IN_CREATE(self, event):
         if os.path.basename(event.pathname).startswith('.#'):
             # backup file
@@ -74,23 +81,26 @@ class PTmp(ProcessEvent):
     def process_IN_MODIFY(self, event):
         if _ignore_file(event.pathname):
             return
-            
-        if os.path.isfile(LOCK_FILE):
-            # command is still running
-            return
-        
-        print "Modifying:", event.pathname
-        command = _find_command(event.pathname)
-        if command:
-            if settings.VERBOSE:
-                print "Command: ",
-                print command
-            open(LOCK_FILE, 'w').write("Running command\n\n%s\n" % command)
-            os.system(command)
-            if os.path.isfile(LOCK_FILE):
-                os.remove(LOCK_FILE)
-            print "Waiting for stuff to happen again..."
-            
+
+        def execute_command(event, lock):
+            # doest not block
+            if not lock.acquire(False):
+                # in this case we just want to not execute the command
+                return
+            print "Modifying:", event.pathname
+            command = _find_command(event.pathname)
+            if command:
+                if settings.VERBOSE:
+                    print "Command: ",
+                    print command
+                p = Popen(command, shell=True)
+                sts = os.waitpid(p.pid, 0)
+            lock.release()
+
+        command_thread = Thread(target=execute_command, args=[event, self.lock])
+        command_thread.start()
+
+
 def start(actual_directories):
     
     wm = WatchManager()
