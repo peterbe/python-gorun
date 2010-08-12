@@ -83,8 +83,15 @@ class PTmp(ProcessEvent):
             return
 
         def execute_command(event, lock):
-            # doest not block
-            if not lock.acquire(False):
+            # By default trying to acquire a lock is blocking
+            # In this case it will create a queue of commands to run
+            #
+            # If you try to acquire the lock in the locked state non-blocking
+            # style, it will immediatly returns False and you know that a
+            # command is already running, and in this case we don't want to run
+            # this command at all.
+            block = settings.RUN_ON_EVERY_SAVE
+            if not lock.acquire(block):
                 # in this case we just want to not execute the command
                 return
             print "Modifying:", event.pathname
@@ -183,6 +190,7 @@ if __name__=='__main__':
     settings.VERBOSE = getattr(x, 'VERBOSE', settings.VERBOSE)
     settings.IGNORE_EXTENSIONS = getattr(x, 'IGNORE_EXTENSIONS', tuple())
     settings.IGNORE_DIRECTORIES = getattr(x, 'IGNORE_DIRECTORIES', tuple())
+    settings.RUN_ON_EVERY_SAVE = getattr(x, 'RUN_ON_EVERY_SAVE', False)
     actual_directories = configure_more(settings.DIRECTORIES)
     
     sys.exit(start(actual_directories))
