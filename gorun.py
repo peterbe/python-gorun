@@ -90,7 +90,7 @@ class PTmp(ProcessEvent):
             # style, it will immediatly returns False and you know that a
             # command is already running, and in this case we don't want to run
             # this command at all.
-            block = settings.RUN_ON_EVERY_SAVE
+            block = settings.RUN_ON_EVERY_EVENT
             if not lock.acquire(block):
                 # in this case we just want to not execute the command
                 return
@@ -190,7 +190,7 @@ if __name__=='__main__':
     settings.VERBOSE = getattr(x, 'VERBOSE', settings.VERBOSE)
     settings.IGNORE_EXTENSIONS = getattr(x, 'IGNORE_EXTENSIONS', tuple())
     settings.IGNORE_DIRECTORIES = getattr(x, 'IGNORE_DIRECTORIES', tuple())
-    settings.RUN_ON_EVERY_SAVE = getattr(x, 'RUN_ON_EVERY_SAVE', False)
+    settings.RUN_ON_EVERY_EVENT = getattr(x, 'RUN_ON_EVERY_EVENT', False)
     actual_directories = configure_more(settings.DIRECTORIES)
     
     sys.exit(start(actual_directories))
