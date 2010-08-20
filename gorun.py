@@ -8,7 +8,7 @@
 
 import os
 
-__version__='1.5'
+__version__='1.6'
     
 # Prepare a lock file
 from tempfile import gettempdir
@@ -50,6 +50,8 @@ def _ignore_file(path):
         return True
     basename = os.path.basename(path)
     if basename.startswith('.#'):
+        return True
+    if basename.startswith('#') and basename.endswith('#'):
         return True
     if '.' in os.path.basename(path) and \
        basename.split('.')[-1] in settings.IGNORE_EXTENSIONS:
