@@ -169,6 +169,7 @@ def configure_more(directories):
 
 if __name__=='__main__':
     import sys
+    import imp
     args = sys.argv[1:]
     if not args and os.path.isfile('gorun_settings.py'):
         print >>sys.stderr, "Guessing you want to use gorun_settings.py"
@@ -183,11 +184,9 @@ if __name__=='__main__':
 
     
     settings_file = args[-1]
-    if settings_file.endswith('.py'):
-        settings_file = settings_file[:-3]
         
     sys.path.append(os.path.abspath(os.curdir))
-    x = __import__(settings_file)
+    x = imp.load_source('gorun_settings', settings_file)
     settings.DIRECTORIES = x.DIRECTORIES
     settings.VERBOSE = getattr(x, 'VERBOSE', settings.VERBOSE)
     settings.IGNORE_EXTENSIONS = getattr(x, 'IGNORE_EXTENSIONS', tuple())
