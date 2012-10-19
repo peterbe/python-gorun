@@ -2,7 +2,7 @@
 gorun
 #####
 
-(c) Peter Bengtsson, Fry-IT, peter@fry-it.com, 2009-2010
+(c) Peter Bengtsson, mail@peterbe.com, 2009-2012
 License: Python
 
 
@@ -12,7 +12,7 @@ Using (py)inotify to run commands when files change
 Tired of switching console, arrow-up, Enter, switch console back for
 every little change you make when you're writing code that has tests?
 Running with ``gorun.py`` enables you to just save in your editor and
-the tests are run automatically and immediately. 
+the tests are run automatically and immediately.
 
 ``gorun.py`` does not use a slow pulling process which keeps taps on
 files modification time. Instead it uses the inotify_ which is "a Linux kernel
@@ -42,7 +42,7 @@ define a variable called ``DIRECTORIES``. Here's an example:
 
     DIRECTORIES = (
        ('some/place/', './myframework test --dir some/place'),
-       ('some/place/unitests.py', 
+       ('some/place/unitests.py',
         './myframework test --dir some/place --testclass Unittests'),
        ('/var/log/torrentsdownload.log',
         'growl downloads --logfile /var/log/torrentsdownload.log'),
