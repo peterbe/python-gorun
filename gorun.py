@@ -2,13 +2,14 @@
 #
 # Wrapper on pyinotify for running commands
 # (c) 2009 Peter Bengtsson, peter@fry-it.com
-# 
+#
 # TODO: Ok, now it does not start a command while another is runnnig
 #       But! then what if you actually wanted to test a modification you
 #            saved while running another test
 #         Yes, we could stop the running command and replace it by the new test
 #           But! django tests will complain that a test db is already here
 
+import argparse
 import os
 
 from subprocess import Popen
@@ -18,7 +19,7 @@ __version__='1.6'
 
 class SettingsClass(object):
     VERBOSE = False
-    
+
 settings = SettingsClass()
 
 try:
@@ -44,7 +45,7 @@ def _find_command(path):
             return lookup[path]
         except KeyError:
             pass
-        
+
 def _ignore_file(path):
     if path.endswith('.pyc'):
         return True
@@ -111,32 +112,32 @@ class PTmp(ProcessEvent):
 
 
 def start(actual_directories):
-    
+
     wm = WatchManager()
     flags = EventsCodes.ALL_FLAGS
     mask = flags['IN_MODIFY'] #| flags['IN_CREATE']
-        
+
     p = PTmp()
     notifier = Notifier(wm, p)
-    
+
     for actual_directory in actual_directories:
         print "DIRECTORY", actual_directory
         wdd = wm.add_watch(actual_directory, mask, rec=True)
-    
+
     # notifier = Notifier(wm, p, timeout=10)
     try:
         print "Waiting for stuff to happen..."
         notifier.loop()
     except KeyboardInterrupt:
         pass
-    
+
     return 0
 
 lookup = {}
 
 def configure_more(directories):
     actual_directories = set()
-    
+
     #print "directories", directories
 
     # Tune the configured directories a bit
@@ -160,31 +161,46 @@ def configure_more(directories):
         else:
             # because we can't tell pyinotify to monitor files,
             # when a file is configured, add it's directory
-            actual_directories.add(os.path.dirname(path)) 
-        
+            actual_directories.add(os.path.dirname(path))
+
         lookup[path] = cmd
-        
+
     return actual_directories
 
 
-if __name__=='__main__':
-    import sys
-    import imp
-    args = sys.argv[1:]
-    if not args and os.path.isfile('gorun_settings.py'):
-        print >>sys.stderr, "Guessing you want to use gorun_settings.py"
-        args = ['gorun_settings.py']
-    if not args and os.path.isfile('gorunsettings.py'):
-        print >>sys.stderr, "Guessing you want to use gorunsettings.py"
-        args = ['gorunsettings.py']
-    if not args:
-        print >>sys.stderr, "USAGE: %s importable_py_settings_file" %\
-          __file__
+def get_settings_file():
+    """Return a setting file path or exit if not passed in and no
+    defaults settings files are found.
+    """
+    parser = argparse.ArgumentParser(description="Gorun")
+    path_files = [os.path.expanduser('~/.gorun_settings.py'),
+                  os.path.expanduser('~/.gorunsettings.py')]
+
+    parser.add_argument('-c', '--conf', help='Full path to the configuration file')
+    ns = parser.parse_args()
+
+    settings_file = None
+    if ns.conf:
+        settings_file = ns.conf
+    else:
+        for path in path_files:
+            if os.path.isfile(path):
+                settings_file = path
+                print("Using configuration file %s" % settings_file)
+                break
+
+    if settings_file is None:
+        parser.print_help()
         sys.exit(1)
 
-    
-    settings_file = args[-1]
-        
+    return settings_file
+
+
+if __name__ == '__main__':
+    import sys
+    import imp
+
+    settings_file = get_settings_file()
     sys.path.append(os.path.abspath(os.curdir))
     x = imp.load_source('gorun_settings', settings_file)
     settings.DIRECTORIES = x.DIRECTORIES
@@ -193,5 +209,5 @@ if __name__=='__main__':
     settings.IGNORE_DIRECTORIES = getattr(x, 'IGNORE_DIRECTORIES', tuple())
     settings.RUN_ON_EVERY_EVENT = getattr(x, 'RUN_ON_EVERY_EVENT', False)
     actual_directories = configure_more(settings.DIRECTORIES)
-    
+
     sys.exit(start(actual_directories))
