@@ -53,7 +53,7 @@ like this:
 
 ::
 
-    $ gorun.py gorun_settings
+    $ gorun.py gorun_settings.py
 
 Configuration
 -------------
